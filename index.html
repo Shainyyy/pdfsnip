@@ -70,7 +70,7 @@
     .file-item .file-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .file-item .file-size{color:var(--muted);font-size:0.75rem;white-space:nowrap}
     .file-item .remove-btn{background:none;border:none;color:#f87171;cursor:pointer;font-size:0.9rem;padding:0 0.2rem;flex-shrink:0}
-    .file-item .drag-handle{color:var(--accent2);font-size:1.2rem;cursor:grab;padding:0 0.2rem;opacity:0.7;flex-shrink:0;line-height:1}
+    .file-item .drag-handle{color:var(--accent2);cursor:grab;padding:0 0.2rem;opacity:0.7;flex-shrink:0;display:flex;align-items:center}
     .file-item:hover .drag-handle{opacity:1}
     .order-num{background:rgba(37,99,235,0.15);border:1px solid rgba(37,99,235,0.3);color:var(--accent2);font-size:0.7rem;font-weight:700;min-width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
@@ -323,7 +323,7 @@
       item.dataset.idx = i;
       item.innerHTML = `
         <span class="order-num">${i + 1}</span>
-        <span class="drag-handle" title="Drag to reorder">⠿</span>
+        <span class="drag-handle" title="Drag to reorder"><svg width="14" height="18" viewBox="0 0 14 18" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="4" cy="3" r="1.5"/><circle cx="10" cy="3" r="1.5"/><circle cx="4" cy="9" r="1.5"/><circle cx="10" cy="9" r="1.5"/><circle cx="4" cy="15" r="1.5"/><circle cx="10" cy="15" r="1.5"/></svg></span>
         <span class="file-name">📄 ${f.name}</span>
         <span class="file-size">${(f.size/1024).toFixed(0)} KB</span>
         <button class="remove-btn" onclick="removeMergeFile(${i})" title="Remove">✕</button>
