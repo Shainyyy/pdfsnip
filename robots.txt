@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.pdfsnip.net/sitemap.xml
+Sitemap: https://pdfsnip.net/sitemap.xml
