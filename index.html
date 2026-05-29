@@ -8,414 +8,94 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-  <!-- Monetag Vignette -->
-  <script>(function(s){s.dataset.zone='11072372',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+  <!-- NO Monetag on page load — injected only on download -->
   <style>
     :root {
-      --bg: #07090f;
-      --bg2: #0d1117;
-      --bg3: #111827;
-      --card: #0f1623;
-      --border: #1e2d45;
-      --accent: #2563eb;
-      --accent2: #3b82f6;
-      --accent-glow: rgba(37,99,235,0.25);
-      --text: #e8edf5;
-      --muted: #6b7fa3;
-      --success: #10b981;
+      --bg:#07090f; --bg2:#0d1117; --bg3:#111827;
+      --card:#0f1623; --border:#1e2d45;
+      --accent:#2563eb; --accent2:#3b82f6; --accent-glow:rgba(37,99,235,0.25);
+      --text:#e8edf5; --muted:#6b7fa3; --success:#10b981;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--text);text-decoration:none;letter-spacing:-0.02em}
+    .logo span{color:var(--accent2)}
+    nav ul{list-style:none;display:flex;gap:2rem}
+    nav a{color:var(--muted);text-decoration:none;font-size:0.9rem;font-weight:500;transition:color 0.2s}
+    nav a:hover{color:var(--text)}
+    .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 4rem;overflow:hidden}
+    .hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(37,99,235,0.15) 0%,transparent 70%);pointer-events:none}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:1.5rem}
+    .hero h1 em{font-style:normal;color:var(--accent2)}
+    .hero p{font-size:1.15rem;color:var(--muted);max-width:520px;margin-bottom:3rem;font-weight:300}
+    .badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);color:var(--accent2);font-size:0.8rem;font-weight:600;padding:0.35rem 0.9rem;border-radius:999px;margin-bottom:1.5rem;letter-spacing:0.05em;text-transform:uppercase}
+    .tools{padding:4rem 2rem 6rem;max-width:1100px;margin:0 auto}
+    .tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
+    .tool-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;cursor:pointer;transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;position:relative;overflow:hidden}
+    .tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity 0.2s}
+    .tool-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 32px var(--accent-glow)}
+    .tool-card:hover::before{opacity:1}
+    .tool-icon{width:48px;height:48px;background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1.25rem}
+    .tool-card h3{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:0.5rem;color:var(--text)}
+    .tool-card p{color:var(--muted);font-size:0.9rem;line-height:1.5}
+    .panel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;padding:1rem}
+    .panel-overlay.active{display:flex}
+    .panel{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem;width:100%;max-width:560px;position:relative;animation:panelIn 0.25s ease}
+    @keyframes panelIn{from{opacity:0;transform:scale(0.96) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .panel-close{position:absolute;top:1.25rem;right:1.25rem;background:var(--bg3);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:color 0.2s}
+    .panel-close:hover{color:var(--text)}
+    .panel h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:0.4rem}
+    .panel-sub{color:var(--muted);font-size:0.9rem;margin-bottom:1.75rem}
+    .dropzone{border:2px dashed var(--border);border-radius:12px;padding:2.5rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;margin-bottom:1.5rem;display:block}
+    .dropzone:hover,.dropzone.drag-over{border-color:var(--accent);background:rgba(37,99,235,0.05)}
+    .dropzone-icon{font-size:2rem;margin-bottom:0.75rem}
+    .dropzone p{color:var(--muted);font-size:0.9rem}
+    .dropzone strong{color:var(--text)}
+    .input-row{display:flex;gap:0.75rem;margin-bottom:1rem;align-items:center}
+    .input-row label{color:var(--muted);font-size:0.85rem;min-width:60px}
+    input[type="number"]{background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:0.5rem 0.75rem;font-size:0.95rem;width:80px;font-family:'DM Sans',sans-serif}
+    input[type="number"]:focus{outline:1px solid var(--accent)}
 
-    /* NOISE OVERLAY */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-    }
+    /* MERGE FILE LIST with drag-reorder */
+    .file-list{margin-bottom:1rem;display:flex;flex-direction:column;gap:0.5rem}
+    .file-item{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.9rem;font-size:0.85rem;color:var(--text);display:flex;align-items:center;gap:0.6rem;cursor:grab;user-select:none;transition:border-color 0.15s,opacity 0.15s}
+    .file-item:active{cursor:grabbing}
+    .file-item.dragging{opacity:0.4;border-color:var(--accent)}
+    .file-item.drag-target{border-color:var(--accent2);background:rgba(37,99,235,0.08)}
+    .file-item .drag-handle{color:var(--muted);font-size:0.9rem;cursor:grab}
+    .file-item .file-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .file-item .file-size{color:var(--muted);font-size:0.75rem;white-space:nowrap}
+    .file-item .remove-btn{background:none;border:none;color:#f87171;cursor:pointer;font-size:0.9rem;padding:0 0.2rem;flex-shrink:0}
 
-    /* NAV */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 0 2rem;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(7,9,15,0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-    }
-    .logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 1.4rem;
-      color: var(--text);
-      text-decoration: none;
-      letter-spacing: -0.02em;
-    }
-    .logo span { color: var(--accent2); }
-    nav ul {
-      list-style: none;
-      display: flex;
-      gap: 2rem;
-    }
-    nav a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-    nav a:hover { color: var(--text); }
-
-    /* HERO */
-    .hero {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 8rem 2rem 4rem;
-      overflow: hidden;
-    }
-    .hero-glow {
-      position: absolute;
-      top: 20%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 600px;
-      height: 400px;
-      background: radial-gradient(ellipse, rgba(37,99,235,0.15) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin-bottom: 1.5rem;
-      position: relative;
-    }
-    .hero h1 em {
-      font-style: normal;
-      color: var(--accent2);
-    }
-    .hero p {
-      font-size: 1.15rem;
-      color: var(--muted);
-      max-width: 520px;
-      margin-bottom: 3rem;
-      font-weight: 300;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(37,99,235,0.1);
-      border: 1px solid rgba(37,99,235,0.3);
-      color: var(--accent2);
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 0.35rem 0.9rem;
-      border-radius: 999px;
-      margin-bottom: 1.5rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    /* TOOLS GRID */
-    .tools {
-      padding: 4rem 2rem 6rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-    .tool-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2rem;
-      cursor: pointer;
-      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-    .tool-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    .tool-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 32px var(--accent-glow);
-    }
-    .tool-card:hover::before { opacity: 1; }
-    .tool-icon {
-      width: 48px;
-      height: 48px;
-      background: rgba(37,99,235,0.12);
-      border: 1px solid rgba(37,99,235,0.2);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      margin-bottom: 1.25rem;
-    }
-    .tool-card h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--text);
-    }
-    .tool-card p {
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-
-    /* TOOL PANEL */
-    .panel-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(6px);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-    .panel-overlay.active { display: flex; }
-    .panel {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2.5rem;
-      width: 100%;
-      max-width: 560px;
-      position: relative;
-      animation: panelIn 0.25s ease;
-    }
-    @keyframes panelIn {
-      from { opacity: 0; transform: scale(0.96) translateY(10px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    .panel-close {
-      position: absolute;
-      top: 1.25rem; right: 1.25rem;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      width: 32px; height: 32px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      display: flex; align-items: center; justify-content: center;
-      transition: color 0.2s;
-    }
-    .panel-close:hover { color: var(--text); }
-    .panel h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 0.4rem;
-    }
-    .panel-sub {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 1.75rem;
-    }
-
-    /* DROPZONE */
-    .dropzone {
-      border: 2px dashed var(--border);
-      border-radius: 12px;
-      padding: 2.5rem;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      margin-bottom: 1.5rem;
-    }
-    .dropzone:hover, .dropzone.drag-over {
-      border-color: var(--accent);
-      background: rgba(37,99,235,0.05);
-    }
-    .dropzone-icon { font-size: 2rem; margin-bottom: 0.75rem; }
-    .dropzone p { color: var(--muted); font-size: 0.9rem; }
-    .dropzone strong { color: var(--text); }
-    #file-input, #file-input-merge { display: none; }
-
-    /* INPUTS */
-    .input-row {
-      display: flex;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-      align-items: center;
-    }
-    .input-row label { color: var(--muted); font-size: 0.85rem; min-width: 60px; }
-    input[type="number"] {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 0.5rem 0.75rem;
-      font-size: 0.95rem;
-      width: 80px;
-      font-family: 'DM Sans', sans-serif;
-    }
-    input[type="number"]:focus { outline: 1px solid var(--accent); }
-
-    /* FILE LIST */
-    .file-list {
-      margin-bottom: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .file-item {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.6rem 0.9rem;
-      font-size: 0.85rem;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .file-item span { color: var(--muted); font-size: 0.75rem; margin-left: auto; }
-
-    /* BUTTONS */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 0.75rem 1.5rem;
-      font-size: 0.95rem;
-      font-weight: 600;
-      font-family: 'DM Sans', sans-serif;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.15s;
-      width: 100%;
-      justify-content: center;
-    }
-    .btn:hover { background: var(--accent2); transform: translateY(-1px); }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-    .btn-secondary {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      color: var(--text);
-      margin-top: 0.5rem;
-    }
-    .btn-secondary:hover { background: var(--border); }
-
-    /* STATUS */
-    .status {
-      margin-top: 1rem;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      display: none;
-    }
-    .status.info { background: rgba(37,99,235,0.1); border: 1px solid rgba(37,99,235,0.3); color: var(--accent2); display: block; }
-    .status.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--success); display: block; }
-    .status.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; display: block; }
+    .btn{display:inline-flex;align-items:center;gap:0.5rem;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:0.75rem 1.5rem;font-size:0.95rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background 0.2s,transform 0.15s;width:100%;justify-content:center}
+    .btn:hover{background:var(--accent2);transform:translateY(-1px)}
+    .btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+    .status{margin-top:1rem;padding:0.75rem 1rem;border-radius:8px;font-size:0.85rem;display:none}
+    .status.info{background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);color:var(--accent2);display:block}
+    .status.success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:var(--success);display:block}
+    .status.error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;display:block}
 
     /* AD OVERLAY */
-    .ad-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 500;
-      align-items: center;
-      justify-content: center;
-    }
-    .ad-overlay.active { display: flex; }
-    .ad-box {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2.5rem;
-      text-align: center;
-      max-width: 420px;
-      width: 90%;
-      animation: panelIn 0.25s ease;
-    }
-    .ad-box h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; margin-bottom: 0.5rem; }
-    .ad-box p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
-    .countdown {
-      font-size: 2.5rem;
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      color: var(--accent2);
-      margin-bottom: 1.5rem;
-    }
-    #skip-btn { display: none; }
+    .ad-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:500;align-items:center;justify-content:center;flex-direction:column}
+    .ad-overlay.active{display:flex}
+    .ad-box{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem;text-align:center;max-width:420px;width:90%;animation:panelIn 0.25s ease}
+    .ad-box h3{font-family:'Syne',sans-serif;font-size:1.2rem;margin-bottom:0.5rem}
+    .ad-box p{color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem}
+    .countdown{font-size:2.5rem;font-family:'Syne',sans-serif;font-weight:800;color:var(--accent2);margin-bottom:1.5rem}
+    #skip-btn{display:none}
 
-    /* FEATURES */
-    .features {
-      padding: 4rem 2rem;
-      max-width: 1100px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 2rem;
-      border-top: 1px solid var(--border);
-    }
-    .feature { text-align: center; }
-    .feature-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
-    .feature h4 { font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 0.4rem; }
-    .feature p { color: var(--muted); font-size: 0.85rem; }
-
-    /* FOOTER */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 2rem;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-    footer a { color: var(--muted); text-decoration: none; transition: color 0.2s; margin: 0 0.75rem; }
-    footer a:hover { color: var(--text); }
-
-    @media (max-width: 600px) {
-      nav ul { display: none; }
-      .panel { padding: 1.75rem; }
-    }
+    .features{padding:4rem 2rem;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;border-top:1px solid var(--border)}
+    .feature{text-align:center}
+    .feature-icon{font-size:1.75rem;margin-bottom:0.75rem}
+    .feature h4{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.4rem}
+    .feature p{color:var(--muted);font-size:0.85rem}
+    footer{border-top:1px solid var(--border);padding:2rem;text-align:center;color:var(--muted);font-size:0.85rem}
+    footer a{color:var(--muted);text-decoration:none;transition:color 0.2s;margin:0 0.75rem}
+    footer a:hover{color:var(--text)}
+    @media(max-width:600px){nav ul{display:none}.panel{padding:1.75rem}}
   </style>
 </head>
 <body>
@@ -429,7 +109,6 @@
   </ul>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-glow"></div>
   <div class="badge">⚡ 100% Free · No Upload · Browser-Based</div>
@@ -438,53 +117,31 @@
   <a href="#tools" class="btn" style="width:auto;padding:0.85rem 2.5rem;">Start for free →</a>
 </section>
 
-<!-- TOOLS -->
 <section class="tools" id="tools">
   <div class="tools-grid">
-
     <div class="tool-card" onclick="openPanel('split')">
       <div class="tool-icon">✂️</div>
       <h3>Split PDF</h3>
       <p>Extract a page range from any PDF. Split your document into exactly the pages you need.</p>
     </div>
-
     <div class="tool-card" onclick="openPanel('merge')">
       <div class="tool-icon">🔗</div>
       <h3>Merge PDF</h3>
-      <p>Combine multiple PDF files into one. Drag and add as many files as you need.</p>
+      <p>Combine multiple PDF files into one. Drag to reorder before merging.</p>
     </div>
-
     <div class="tool-card" onclick="openPanel('compress')">
       <div class="tool-icon">📦</div>
       <h3>Compress PDF</h3>
       <p>Reduce your PDF file size without quality loss. Perfect for email and sharing.</p>
     </div>
-
   </div>
 </section>
 
-<!-- FEATURES -->
 <div class="features">
-  <div class="feature">
-    <div class="feature-icon">🔒</div>
-    <h4>100% Private</h4>
-    <p>Your files never leave your device. All processing happens locally in your browser.</p>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">⚡</div>
-    <h4>Instant</h4>
-    <p>No waiting for uploads or server processing. Results in seconds.</p>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">🆓</div>
-    <h4>Always Free</h4>
-    <p>No subscriptions, no account required. Just open and use.</p>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">🌐</div>
-    <h4>Any Device</h4>
-    <p>Works on desktop, tablet, and mobile. Any modern browser.</p>
-  </div>
+  <div class="feature"><div class="feature-icon">🔒</div><h4>100% Private</h4><p>Your files never leave your device. All processing happens locally in your browser.</p></div>
+  <div class="feature"><div class="feature-icon">⚡</div><h4>Instant</h4><p>No waiting for uploads or server processing. Results in seconds.</p></div>
+  <div class="feature"><div class="feature-icon">🆓</div><h4>Always Free</h4><p>No subscriptions, no account required. Just open and use.</p></div>
+  <div class="feature"><div class="feature-icon">🌐</div><h4>Any Device</h4><p>Works on desktop, tablet, and mobile. Any modern browser.</p></div>
 </div>
 
 <footer>
@@ -493,18 +150,18 @@
   <a href="terms.html">Terms of Service</a>
 </footer>
 
-<!-- ===== SPLIT PANEL ===== -->
+<!-- SPLIT PANEL -->
 <div class="panel-overlay" id="panel-split">
   <div class="panel">
     <button class="panel-close" onclick="closePanel('split')">✕</button>
     <h2>✂️ Split PDF</h2>
     <p class="panel-sub">Select a PDF and choose the page range to extract.</p>
-    <label class="dropzone" id="drop-split" for="file-input" style="cursor:pointer;display:block;">
+    <div class="dropzone" id="drop-split">
       <div class="dropzone-icon">📄</div>
       <p><strong>Click to select</strong> or drag & drop your PDF here</p>
       <p id="split-filename" style="margin-top:0.5rem;color:#3b82f6;font-size:0.85rem;"></p>
-    </label>
-    <input type="file" id="file-input" accept=".pdf" onchange="handleSplitFile(this)" style="display:none;" />
+    </div>
+    <input type="file" id="file-input-split" accept=".pdf" style="display:none;" />
     <div class="input-row">
       <label>From</label>
       <input type="number" id="split-from" value="1" min="1" />
@@ -517,60 +174,61 @@
   </div>
 </div>
 
-<!-- ===== MERGE PANEL ===== -->
+<!-- MERGE PANEL -->
 <div class="panel-overlay" id="panel-merge">
   <div class="panel">
     <button class="panel-close" onclick="closePanel('merge')">✕</button>
     <h2>🔗 Merge PDFs</h2>
-    <p class="panel-sub">Add multiple PDF files and combine them into one.</p>
-    <label class="dropzone" id="drop-merge" for="file-input-merge" style="cursor:pointer;display:block;">
+    <p class="panel-sub">Add files, drag to reorder, then merge.</p>
+    <div class="dropzone" id="drop-merge">
       <div class="dropzone-icon">📂</div>
       <p><strong>Click to add files</strong> or drag & drop PDFs here</p>
-    </label>
-    <input type="file" id="file-input-merge" accept=".pdf" multiple onchange="handleMergeFiles(this)" style="display:none;" />
+    </div>
+    <input type="file" id="file-input-merge" accept=".pdf" multiple style="display:none;" />
     <div class="file-list" id="merge-file-list"></div>
     <button class="btn" onclick="doMerge()" id="merge-btn" disabled>🔗 Merge & Download</button>
     <div class="status" id="status-merge"></div>
   </div>
 </div>
 
-<!-- ===== COMPRESS PANEL ===== -->
+<!-- COMPRESS PANEL -->
 <div class="panel-overlay" id="panel-compress">
   <div class="panel">
     <button class="panel-close" onclick="closePanel('compress')">✕</button>
     <h2>📦 Compress PDF</h2>
     <p class="panel-sub">Reduce file size by removing metadata and optimizing structure.</p>
-    <label class="dropzone" id="drop-compress" for="file-input-compress" style="cursor:pointer;display:block;">
+    <div class="dropzone" id="drop-compress">
       <div class="dropzone-icon">📄</div>
       <p><strong>Click to select</strong> or drag & drop your PDF here</p>
       <p id="compress-filename" style="margin-top:0.5rem;color:#3b82f6;font-size:0.85rem;"></p>
-    </label>
-    <input type="file" id="file-input-compress" accept=".pdf" onchange="handleCompressFile(this)" style="display:none;" />
+    </div>
+    <input type="file" id="file-input-compress" accept=".pdf" style="display:none;" />
     <button class="btn" onclick="doCompress()" id="compress-btn" disabled>📦 Compress & Download</button>
     <div class="status" id="status-compress"></div>
   </div>
 </div>
 
-<!-- ===== AD OVERLAY ===== -->
+<!-- AD OVERLAY -->
 <div class="ad-overlay" id="ad-overlay">
   <div class="ad-box">
     <h3>⚡ Your file is ready!</h3>
-    <p>Please wait a moment while we prepare your download.</p>
+    <p>Please wait while we prepare your download.</p>
     <div class="countdown" id="countdown">5</div>
     <button class="btn" id="skip-btn" onclick="triggerDownload()">⬇️ Download now</button>
-    <p style="font-size:0.75rem;color:var(--muted);margin-top:1rem;">Ads keep PDFSnip free for everyone.</p>
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:1rem;">Ads keep PDFSnip free for everyone 🙏</p>
   </div>
 </div>
 
 <script>
-  // ---- State ----
+  // ── State ──
   let splitFile = null;
   let mergeFiles = [];
   let compressFile = null;
   let pendingDownload = null;
   let countdownTimer = null;
+  let monetagLoaded = false;
 
-  // ---- Panel open/close ----
+  // ── Panels ──
   function openPanel(name) {
     document.getElementById('panel-' + name).classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -579,34 +237,41 @@
     document.getElementById('panel-' + name).classList.remove('active');
     document.body.style.overflow = '';
   }
-  // Close on overlay click
   document.querySelectorAll('.panel-overlay').forEach(el => {
     el.addEventListener('click', e => {
-      if (e.target === el) {
-        el.classList.remove('active');
-        document.body.style.overflow = '';
-      }
+      if (e.target === el) { el.classList.remove('active'); document.body.style.overflow = ''; }
     });
   });
 
-  // ---- Drag & drop ----
-  function setupDrop(zoneId, handler) {
+  // ── Generic dropzone setup ──
+  function setupDropzone(zoneId, inputId, onFiles) {
     const zone = document.getElementById(zoneId);
+    const input = document.getElementById(inputId);
+
+    // Click → open file dialog
+    zone.addEventListener('click', () => input.click());
+
+    // File input change
+    input.addEventListener('change', () => {
+      if (input.files.length) onFiles(input.files);
+      input.value = ''; // reset so same file can be re-added
+    });
+
+    // Drag & drop
     zone.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); zone.classList.add('drag-over'); });
     zone.addEventListener('dragleave', e => { e.stopPropagation(); zone.classList.remove('drag-over'); });
     zone.addEventListener('drop', e => {
-      e.preventDefault();
-      e.stopPropagation();
+      e.preventDefault(); e.stopPropagation();
       zone.classList.remove('drag-over');
-      if (e.dataTransfer.files.length) handler(e.dataTransfer.files);
+      if (e.dataTransfer.files.length) onFiles(e.dataTransfer.files);
     });
   }
-  setupDrop('drop-split', files => { if(files[0]) processSplitFile(files[0]); });
-  setupDrop('drop-merge', files => processMergeFiles(files));
-  setupDrop('drop-compress', files => { if(files[0]) processCompressFile(files[0]); });
 
-  // ---- SPLIT ----
-  async function handleSplitFile(input) { if(input.files[0]) processSplitFile(input.files[0]); }
+  setupDropzone('drop-split', 'file-input-split', files => processSplitFile(files[0]));
+  setupDropzone('drop-merge', 'file-input-merge', files => processMergeFiles(files));
+  setupDropzone('drop-compress', 'file-input-compress', files => processCompressFile(files[0]));
+
+  // ── SPLIT ──
   async function processSplitFile(file) {
     splitFile = file;
     document.getElementById('split-filename').textContent = '📎 ' + file.name;
@@ -615,6 +280,7 @@
       const pdf = await PDFLib.PDFDocument.load(buf);
       const n = pdf.getPageCount();
       document.getElementById('split-to').value = n;
+      document.getElementById('split-from').value = 1;
       document.getElementById('split-total').textContent = n + ' pages';
     } catch(e) {}
   }
@@ -626,30 +292,59 @@
     showStatus('split','info','Processing…');
     try {
       const buf = await splitFile.arrayBuffer();
-      const srcPdf = await PDFLib.PDFDocument.load(buf);
-      const newPdf = await PDFLib.PDFDocument.create();
-      const pages = await newPdf.copyPages(srcPdf, Array.from({length: to - from + 1}, (_,i) => from + i));
-      pages.forEach(p => newPdf.addPage(p));
-      const bytes = await newPdf.save();
-      const outName = splitFile.name.replace('.pdf','') + `_pages${from+1}-${to+1}.pdf`;
-      showAdAndDownload(bytes, outName);
-      showStatus('split','success','Done! Preparing download…');
-    } catch(e) {
-      showStatus('split','error','Error: ' + e.message);
-    }
+      const src = await PDFLib.PDFDocument.load(buf);
+      const out = await PDFLib.PDFDocument.create();
+      const pages = await out.copyPages(src, Array.from({length: to - from + 1}, (_,i) => from + i));
+      pages.forEach(p => out.addPage(p));
+      const bytes = await out.save();
+      const name = splitFile.name.replace(/\.pdf$/i,'') + `_pages${from+1}-${to+1}.pdf`;
+      showAdAndDownload(bytes, name);
+      showStatus('split','success','Done! Download starting…');
+    } catch(e) { showStatus('split','error','Error: ' + e.message); }
   }
 
-  // ---- MERGE ----
-  function handleMergeFiles(input) { processMergeFiles(input.files); }
+  // ── MERGE with drag-to-reorder ──
+  let dragSrcIdx = null;
+
   function processMergeFiles(files) {
     for (const f of files) mergeFiles.push(f);
     renderMergeList();
   }
   function renderMergeList() {
     const list = document.getElementById('merge-file-list');
-    list.innerHTML = mergeFiles.map((f,i) =>
-      `<div class="file-item">📄 ${f.name}<span>${(f.size/1024).toFixed(0)} KB <button onclick="removeMergeFile(${i})" style="background:none;border:none;color:#f87171;cursor:pointer;margin-left:0.5rem;">✕</button></span></div>`
-    ).join('');
+    list.innerHTML = '';
+    mergeFiles.forEach((f, i) => {
+      const item = document.createElement('div');
+      item.className = 'file-item';
+      item.draggable = true;
+      item.dataset.idx = i;
+      item.innerHTML = `
+        <span class="drag-handle">⠿</span>
+        <span class="file-name">📄 ${f.name}</span>
+        <span class="file-size">${(f.size/1024).toFixed(0)} KB</span>
+        <button class="remove-btn" onclick="removeMergeFile(${i})">✕</button>
+      `;
+      item.addEventListener('dragstart', e => {
+        dragSrcIdx = i;
+        setTimeout(() => item.classList.add('dragging'), 0);
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      item.addEventListener('dragend', () => item.classList.remove('dragging'));
+      item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drag-target'); });
+      item.addEventListener('dragleave', () => item.classList.remove('drag-target'));
+      item.addEventListener('drop', e => {
+        e.preventDefault(); e.stopPropagation();
+        item.classList.remove('drag-target');
+        const targetIdx = parseInt(item.dataset.idx);
+        if (dragSrcIdx !== null && dragSrcIdx !== targetIdx) {
+          const moved = mergeFiles.splice(dragSrcIdx, 1)[0];
+          mergeFiles.splice(targetIdx, 0, moved);
+          renderMergeList();
+        }
+        dragSrcIdx = null;
+      });
+      list.appendChild(item);
+    });
     document.getElementById('merge-btn').disabled = mergeFiles.length < 2;
   }
   function removeMergeFile(i) { mergeFiles.splice(i, 1); renderMergeList(); }
@@ -666,14 +361,11 @@
       }
       const bytes = await merged.save();
       showAdAndDownload(bytes, 'merged.pdf');
-      showStatus('merge','success','Done! Preparing download…');
-    } catch(e) {
-      showStatus('merge','error','Error: ' + e.message);
-    }
+      showStatus('merge','success','Done! Download starting…');
+    } catch(e) { showStatus('merge','error','Error: ' + e.message); }
   }
 
-  // ---- COMPRESS ----
-  function handleCompressFile(input) { if(input.files[0]) processCompressFile(input.files[0]); }
+  // ── COMPRESS ──
   function processCompressFile(file) {
     compressFile = file;
     document.getElementById('compress-filename').textContent = '📎 ' + file.name;
@@ -685,41 +377,50 @@
     try {
       const buf = await compressFile.arrayBuffer();
       const pdf = await PDFLib.PDFDocument.load(buf, { updateMetadata: false });
-      pdf.setTitle('');
-      pdf.setAuthor('');
-      pdf.setSubject('');
-      pdf.setKeywords([]);
-      pdf.setProducer('');
-      pdf.setCreator('');
+      pdf.setTitle(''); pdf.setAuthor(''); pdf.setSubject('');
+      pdf.setKeywords([]); pdf.setProducer(''); pdf.setCreator('');
       const bytes = await pdf.save({ useObjectStreams: true, addDefaultPage: false });
-      const reduction = (((buf.byteLength - bytes.byteLength) / buf.byteLength) * 100).toFixed(1);
-      const outName = compressFile.name.replace('.pdf','') + '_compressed.pdf';
-      showAdAndDownload(bytes, outName);
-      showStatus('compress','success',`Done! Reduced by ~${reduction}%. Preparing download…`);
-    } catch(e) {
-      showStatus('compress','error','Error: ' + e.message);
-    }
+      const pct = (((buf.byteLength - bytes.byteLength) / buf.byteLength) * 100).toFixed(1);
+      const name = compressFile.name.replace(/\.pdf$/i,'') + '_compressed.pdf';
+      showAdAndDownload(bytes, name);
+      showStatus('compress','success', `Reduced by ~${pct}%. Download starting…`);
+    } catch(e) { showStatus('compress','error','Error: ' + e.message); }
   }
 
-  // ---- AD + DOWNLOAD ----
+  // ── AD + DOWNLOAD ──
+  // Monetag vignette is injected ONCE, only when user clicks download
+  function loadMonetag() {
+    if (monetagLoaded) return;
+    monetagLoaded = true;
+    (function(s){
+      s.dataset.zone='11072372';
+      s.src='https://n6wxm.com/vignette.min.js';
+    })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
+  }
+
   function showAdAndDownload(bytes, filename) {
     pendingDownload = { bytes, filename };
+    loadMonetag(); // inject ad script only now
     const overlay = document.getElementById('ad-overlay');
     overlay.classList.add('active');
+    const cdEl = document.getElementById('countdown');
+    const skipBtn = document.getElementById('skip-btn');
     let secs = 5;
-    document.getElementById('countdown').textContent = secs;
-    document.getElementById('skip-btn').style.display = 'none';
+    cdEl.textContent = secs;
+    cdEl.style.display = 'block';
+    skipBtn.style.display = 'none';
     clearInterval(countdownTimer);
     countdownTimer = setInterval(() => {
       secs--;
-      document.getElementById('countdown').textContent = secs;
+      cdEl.textContent = secs;
       if (secs <= 0) {
         clearInterval(countdownTimer);
-        document.getElementById('countdown').style.display = 'none';
-        document.getElementById('skip-btn').style.display = 'inline-flex';
+        cdEl.style.display = 'none';
+        skipBtn.style.display = 'inline-flex';
       }
     }, 1000);
   }
+
   function triggerDownload() {
     if (!pendingDownload) return;
     const { bytes, filename } = pendingDownload;
@@ -733,7 +434,7 @@
     pendingDownload = null;
   }
 
-  // ---- STATUS ----
+  // ── STATUS ──
   function showStatus(tool, type, msg) {
     const el = document.getElementById('status-' + tool);
     el.className = 'status ' + type;
