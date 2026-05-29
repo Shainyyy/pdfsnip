@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2108686124406108" crossorigin="anonymous"></script>
   <style>
@@ -229,7 +230,7 @@
       <p><strong>Click to add images</strong> or drag & drop here</p>
       <p style="font-size:0.8rem;color:var(--muted);margin-top:0.4rem;">JPG, PNG, WEBP, GIF supported</p>
     </div>
-    <input type="file" id="file-input-img2pdf" accept="image/*" multiple style="display:none;" />
+    <input type="file" id="file-input-img2pdf" accept="image/*,.heic,.heif" multiple style="display:none;" />
     <div class="file-list" id="img2pdf-file-list"></div>
     <button class="btn" onclick="doImg2Pdf()" id="img2pdf-btn" disabled>🖼️ Convert & Download</button>
     <div class="status" id="status-img2pdf"></div>
@@ -421,7 +422,8 @@
   // ── IMG2PDF ──
   function processImgFiles(files) {
     for (const f of files) {
-      if (f.type.startsWith('image/')) imgFiles.push(f);
+      const isHeic = f.name.toLowerCase().endsWith('.heic') || f.name.toLowerCase().endsWith('.heif') || f.type === 'image/heic' || f.type === 'image/heif';
+      if (isHeic || f.type.startsWith('image/')) imgFiles.push(f);
     }
     renderImgList();
   }
@@ -472,14 +474,20 @@
     try {
       const pdf = await PDFLib.PDFDocument.create();
       for (const f of imgFiles) {
-        const buf = await f.arrayBuffer();
+        const isHeic = f.name.toLowerCase().endsWith('.heic') || f.name.toLowerCase().endsWith('.heif') || f.type === 'image/heic' || f.type === 'image/heif';
+        let processFile = f;
+        if (isHeic) {
+          showStatus('img2pdf','info',`Converting HEIC: ${f.name}…`);
+          const converted = await heic2any({ blob: f, toType: 'image/jpeg', quality: 0.92 });
+          processFile = new File([converted], f.name.replace(/\.heic$/i,'.jpg').replace(/\.heif$/i,'.jpg'), { type: 'image/jpeg' });
+        }
+        const buf = await processFile.arrayBuffer();
         let img;
-        const type = f.type.toLowerCase();
+        const type = processFile.type.toLowerCase();
         if (type === 'image/jpeg' || type === 'image/jpg') {
           img = await pdf.embedJpg(buf);
         } else {
-          // PNG, WEBP, GIF → convert to PNG via canvas first
-          img = await embedImageViaCanvas(pdf, f);
+          img = await embedImageViaCanvas(pdf, processFile);
         }
         const page = pdf.addPage([img.width, img.height]);
         page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
