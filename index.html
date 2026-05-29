@@ -159,7 +159,7 @@
     <div class="tool-card" onclick="openPanel('compress')">
       <div class="tool-icon">📦</div>
       <h3>Compress PDF</h3>
-      <p>Reduce file size without quality loss. Perfect for email and sharing.</p>
+      <p>Reduce file size by stripping metadata and optimizing structure. Perfect for email and sharing.</p>
     </div>
     <div class="tool-card" onclick="openPanel('delete')">
       <div class="tool-icon">🗑️</div>
@@ -294,7 +294,7 @@
   <div class="panel">
     <button class="panel-close" onclick="closePanel('compress')">✕</button>
     <h2>📦 Compress PDF</h2>
-    <p class="panel-sub">Reduce file size by removing metadata and optimizing structure.</p>
+    <p class="panel-sub">Reduce file size by stripping metadata and optimizing PDF structure. Works best on documents with embedded fonts and hidden data.</p>
     <div class="dropzone" id="drop-compress">
       <div class="dropzone-icon">📄</div>
       <p><strong>Click to select</strong> or drag & drop your PDF here</p>
@@ -360,7 +360,7 @@
   <div class="panel">
     <button class="panel-close" onclick="closePanel('reorder')">✕</button>
     <h2>↕️ Reorder Pages</h2>
-    <p class="panel-sub">Load a PDF, drag pages into your desired order, then save.</p>
+    <p class="panel-sub">Load a PDF, drag pages into your desired order, then export as a new PDF.</p>
     <div class="dropzone" id="drop-reorder">
       <div class="dropzone-icon">📄</div>
       <p><strong>Click to select</strong> or drag & drop your PDF here</p>
@@ -377,7 +377,7 @@
   <div class="panel">
     <button class="panel-close" onclick="closePanel('pdf2img')">✕</button>
     <h2>📷 PDF to Images</h2>
-    <p class="panel-sub">Export pages as PNG. Leave range empty to export all pages.</p>
+    <p class="panel-sub">Export pages as high-quality PNG images. Adjust the range or leave it as-is to export all pages.</p>
     <div class="dropzone" id="drop-pdf2img">
       <div class="dropzone-icon">📄</div>
       <p><strong>Click to select</strong> or drag & drop your PDF here</p>
