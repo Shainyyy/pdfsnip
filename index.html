@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-  <!-- Monetag -->
-  <script src="https://quge5.com/88/tag.min.js" data-zone="244106" async data-cfasync="false"></script>
+  <!-- Monetag Vignette -->
+  <script>(function(s){s.dataset.zone='11072372',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
   <style>
     :root {
       --bg: #07090f;
@@ -499,12 +499,12 @@
     <button class="panel-close" onclick="closePanel('split')">✕</button>
     <h2>✂️ Split PDF</h2>
     <p class="panel-sub">Select a PDF and choose the page range to extract.</p>
-    <div class="dropzone" id="drop-split" onclick="document.getElementById('file-input').click()">
+    <label class="dropzone" id="drop-split" for="file-input" style="cursor:pointer;display:block;">
       <div class="dropzone-icon">📄</div>
       <p><strong>Click to select</strong> or drag & drop your PDF here</p>
       <p id="split-filename" style="margin-top:0.5rem;color:#3b82f6;font-size:0.85rem;"></p>
-    </div>
-    <input type="file" id="file-input" accept=".pdf" onchange="handleSplitFile(this)" />
+    </label>
+    <input type="file" id="file-input" accept=".pdf" onchange="handleSplitFile(this)" style="display:none;" />
     <div class="input-row">
       <label>From</label>
       <input type="number" id="split-from" value="1" min="1" />
@@ -523,11 +523,11 @@
     <button class="panel-close" onclick="closePanel('merge')">✕</button>
     <h2>🔗 Merge PDFs</h2>
     <p class="panel-sub">Add multiple PDF files and combine them into one.</p>
-    <div class="dropzone" id="drop-merge" onclick="document.getElementById('file-input-merge').click()">
+    <label class="dropzone" id="drop-merge" for="file-input-merge" style="cursor:pointer;display:block;">
       <div class="dropzone-icon">📂</div>
       <p><strong>Click to add files</strong> or drag & drop PDFs here</p>
-    </div>
-    <input type="file" id="file-input-merge" accept=".pdf" multiple onchange="handleMergeFiles(this)" />
+    </label>
+    <input type="file" id="file-input-merge" accept=".pdf" multiple onchange="handleMergeFiles(this)" style="display:none;" />
     <div class="file-list" id="merge-file-list"></div>
     <button class="btn" onclick="doMerge()" id="merge-btn" disabled>🔗 Merge & Download</button>
     <div class="status" id="status-merge"></div>
@@ -540,11 +540,11 @@
     <button class="panel-close" onclick="closePanel('compress')">✕</button>
     <h2>📦 Compress PDF</h2>
     <p class="panel-sub">Reduce file size by removing metadata and optimizing structure.</p>
-    <div class="dropzone" id="drop-compress" onclick="document.getElementById('file-input-compress').click()">
+    <label class="dropzone" id="drop-compress" for="file-input-compress" style="cursor:pointer;display:block;">
       <div class="dropzone-icon">📄</div>
       <p><strong>Click to select</strong> or drag & drop your PDF here</p>
       <p id="compress-filename" style="margin-top:0.5rem;color:#3b82f6;font-size:0.85rem;"></p>
-    </div>
+    </label>
     <input type="file" id="file-input-compress" accept=".pdf" onchange="handleCompressFile(this)" style="display:none;" />
     <button class="btn" onclick="doCompress()" id="compress-btn" disabled>📦 Compress & Download</button>
     <div class="status" id="status-compress"></div>
@@ -592,12 +592,13 @@
   // ---- Drag & drop ----
   function setupDrop(zoneId, handler) {
     const zone = document.getElementById(zoneId);
-    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
-    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', e => { e.stopPropagation(); zone.classList.remove('drag-over'); });
     zone.addEventListener('drop', e => {
       e.preventDefault();
+      e.stopPropagation();
       zone.classList.remove('drag-over');
-      handler(e.dataTransfer.files);
+      if (e.dataTransfer.files.length) handler(e.dataTransfer.files);
     });
   }
   setupDrop('drop-split', files => { if(files[0]) processSplitFile(files[0]); });
