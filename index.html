@@ -8,7 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-  <!-- NO Monetag on page load — injected only on download -->
+  <!-- Monetag Interstitial: fires once per session on page load, clean -->
+  <script>(function(s){s.dataset.zone='11072372',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
   <style>
     :root {
       --bg:#07090f; --bg2:#0d1117; --bg3:#111827;
@@ -69,6 +70,9 @@
     .file-item .file-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .file-item .file-size{color:var(--muted);font-size:0.75rem;white-space:nowrap}
     .file-item .remove-btn{background:none;border:none;color:#f87171;cursor:pointer;font-size:0.9rem;padding:0 0.2rem;flex-shrink:0}
+    .file-item .drag-handle{color:var(--accent2);font-size:1.2rem;cursor:grab;padding:0 0.2rem;opacity:0.7;flex-shrink:0;line-height:1}
+    .file-item:hover .drag-handle{opacity:1}
+    .order-num{background:rgba(37,99,235,0.15);border:1px solid rgba(37,99,235,0.3);color:var(--accent2);font-size:0.7rem;font-weight:700;min-width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
     .btn{display:inline-flex;align-items:center;gap:0.5rem;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:0.75rem 1.5rem;font-size:0.95rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background 0.2s,transform 0.15s;width:100%;justify-content:center}
     .btn:hover{background:var(--accent2);transform:translateY(-1px)}
@@ -226,7 +230,6 @@
   let compressFile = null;
   let pendingDownload = null;
   let countdownTimer = null;
-  let monetagLoaded = false;
 
   // ── Panels ──
   function openPanel(name) {
@@ -319,10 +322,11 @@
       item.draggable = true;
       item.dataset.idx = i;
       item.innerHTML = `
-        <span class="drag-handle">⠿</span>
+        <span class="order-num">${i + 1}</span>
+        <span class="drag-handle" title="Drag to reorder">⠿</span>
         <span class="file-name">📄 ${f.name}</span>
         <span class="file-size">${(f.size/1024).toFixed(0)} KB</span>
-        <button class="remove-btn" onclick="removeMergeFile(${i})">✕</button>
+        <button class="remove-btn" onclick="removeMergeFile(${i})" title="Remove">✕</button>
       `;
       item.addEventListener('dragstart', e => {
         dragSrcIdx = i;
@@ -388,19 +392,9 @@
   }
 
   // ── AD + DOWNLOAD ──
-  // Monetag vignette is injected ONCE, only when user clicks download
-  function loadMonetag() {
-    if (monetagLoaded) return;
-    monetagLoaded = true;
-    (function(s){
-      s.dataset.zone='11072372';
-      s.src='https://n6wxm.com/vignette.min.js';
-    })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
-  }
 
   function showAdAndDownload(bytes, filename) {
     pendingDownload = { bytes, filename };
-    loadMonetag(); // inject ad script only now
     const overlay = document.getElementById('ad-overlay');
     overlay.classList.add('active');
     const cdEl = document.getElementById('countdown');
