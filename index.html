@@ -138,6 +138,11 @@
       <h3>Compress PDF</h3>
       <p>Reduce your PDF file size without quality loss. Perfect for email and sharing.</p>
     </div>
+    <div class="tool-card" onclick="openPanel('img2pdf')">
+      <div class="tool-icon">🖼️</div>
+      <h3>Images to PDF</h3>
+      <p>Convert JPG, PNG, WEBP images into a single PDF. Drag to reorder before converting.</p>
+    </div>
   </div>
 </section>
 
@@ -152,6 +157,7 @@
   <p style="margin-bottom:0.75rem;">© 2026 PDFSnip. All rights reserved.</p>
   <a href="privacy.html">Privacy Policy</a>
   <a href="terms.html">Terms of Service</a>
+  <a href="https://github.com/Shainyyy/pdfsnip" target="_blank" rel="noopener">Open Source ↗</a>
 </footer>
 
 <!-- SPLIT PANEL -->
@@ -212,6 +218,24 @@
   </div>
 </div>
 
+<!-- IMG2PDF PANEL -->
+<div class="panel-overlay" id="panel-img2pdf">
+  <div class="panel">
+    <button class="panel-close" onclick="closePanel('img2pdf')">✕</button>
+    <h2>🖼️ Images to PDF</h2>
+    <p class="panel-sub">Add images, drag to reorder, then convert to PDF.</p>
+    <div class="dropzone" id="drop-img2pdf">
+      <div class="dropzone-icon">🖼️</div>
+      <p><strong>Click to add images</strong> or drag & drop here</p>
+      <p style="font-size:0.8rem;color:var(--muted);margin-top:0.4rem;">JPG, PNG, WEBP, GIF supported</p>
+    </div>
+    <input type="file" id="file-input-img2pdf" accept="image/*" multiple style="display:none;" />
+    <div class="file-list" id="img2pdf-file-list"></div>
+    <button class="btn" onclick="doImg2Pdf()" id="img2pdf-btn" disabled>🖼️ Convert & Download</button>
+    <div class="status" id="status-img2pdf"></div>
+  </div>
+</div>
+
 <!-- AD OVERLAY -->
 <div class="ad-overlay" id="ad-overlay">
   <div class="ad-box">
@@ -228,6 +252,7 @@
   let splitFile = null;
   let mergeFiles = [];
   let compressFile = null;
+  let imgFiles = [];
   let pendingDownload = null;
   let countdownTimer = null;
 
@@ -273,6 +298,8 @@
   setupDropzone('drop-split', 'file-input-split', files => processSplitFile(files[0]));
   setupDropzone('drop-merge', 'file-input-merge', files => processMergeFiles(files));
   setupDropzone('drop-compress', 'file-input-compress', files => processCompressFile(files[0]));
+
+  setupDropzone('drop-img2pdf', 'file-input-img2pdf', files => processImgFiles(files));
 
   // ── SPLIT ──
   async function processSplitFile(file) {
@@ -389,6 +416,99 @@
       showAdAndDownload(bytes, name);
       showStatus('compress','success', `Reduced by ~${pct}%. Download starting…`);
     } catch(e) { showStatus('compress','error','Error: ' + e.message); }
+  }
+
+  // ── IMG2PDF ──
+  function processImgFiles(files) {
+    for (const f of files) {
+      if (f.type.startsWith('image/')) imgFiles.push(f);
+    }
+    renderImgList();
+  }
+  let dragImgSrcIdx = null;
+  function renderImgList() {
+    const list = document.getElementById('img2pdf-file-list');
+    list.innerHTML = '';
+    imgFiles.forEach((f, i) => {
+      const item = document.createElement('div');
+      item.className = 'file-item';
+      item.draggable = true;
+      item.dataset.idx = i;
+      item.innerHTML = `
+        <span class="order-num">${i + 1}</span>
+        <span class="drag-handle" title="Drag to reorder"><svg width="14" height="18" viewBox="0 0 14 18" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="4" cy="3" r="1.5"/><circle cx="10" cy="3" r="1.5"/><circle cx="4" cy="9" r="1.5"/><circle cx="10" cy="9" r="1.5"/><circle cx="4" cy="15" r="1.5"/><circle cx="10" cy="15" r="1.5"/></svg></span>
+        <span class="file-name">🖼️ ${f.name}</span>
+        <span class="file-size">${(f.size/1024).toFixed(0)} KB</span>
+        <button class="remove-btn" onclick="removeImgFile(${i})" title="Remove">✕</button>
+      `;
+      item.addEventListener('dragstart', e => {
+        dragImgSrcIdx = i;
+        setTimeout(() => item.classList.add('dragging'), 0);
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      item.addEventListener('dragend', () => item.classList.remove('dragging'));
+      item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drag-target'); });
+      item.addEventListener('dragleave', () => item.classList.remove('drag-target'));
+      item.addEventListener('drop', e => {
+        e.preventDefault(); e.stopPropagation();
+        item.classList.remove('drag-target');
+        const targetIdx = parseInt(item.dataset.idx);
+        if (dragImgSrcIdx !== null && dragImgSrcIdx !== targetIdx) {
+          const moved = imgFiles.splice(dragImgSrcIdx, 1)[0];
+          imgFiles.splice(targetIdx, 0, moved);
+          renderImgList();
+        }
+        dragImgSrcIdx = null;
+      });
+      list.appendChild(item);
+    });
+    document.getElementById('img2pdf-btn').disabled = imgFiles.length < 1;
+  }
+  function removeImgFile(i) { imgFiles.splice(i, 1); renderImgList(); }
+
+  async function doImg2Pdf() {
+    if (imgFiles.length < 1) return showStatus('img2pdf','error','Please add at least one image.');
+    showStatus('img2pdf','info','Converting…');
+    try {
+      const pdf = await PDFLib.PDFDocument.create();
+      for (const f of imgFiles) {
+        const buf = await f.arrayBuffer();
+        let img;
+        const type = f.type.toLowerCase();
+        if (type === 'image/jpeg' || type === 'image/jpg') {
+          img = await pdf.embedJpg(buf);
+        } else {
+          // PNG, WEBP, GIF → convert to PNG via canvas first
+          img = await embedImageViaCanvas(pdf, f);
+        }
+        const page = pdf.addPage([img.width, img.height]);
+        page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+      }
+      const bytes = await pdf.save();
+      showAdAndDownload(bytes, 'images.pdf');
+      showStatus('img2pdf','success','Done! Download starting…');
+    } catch(e) { showStatus('img2pdf','error','Error: ' + e.message); }
+  }
+
+  async function embedImageViaCanvas(pdf, file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = async () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        canvas.toBlob(async blob => {
+          const buf = await blob.arrayBuffer();
+          const embedded = await pdf.embedPng(buf);
+          URL.revokeObjectURL(url);
+          resolve(embedded);
+        }, 'image/png');
+      };
+      img.onerror = reject;
+      img.src = url;
+    });
   }
 
   // ── AD + DOWNLOAD ──
