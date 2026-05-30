@@ -726,96 +726,76 @@ async function doPdf2Word(){
     for(let i=1;i<=n;i++){
       showStatus('pdf2word','info',`Processing page ${i} of ${n}…`);
       const page=await pdf.getPage(i);
-      const content=await page.getTextContent({includeMarkedContent:false});
-      const viewport=page.getViewport({scale:1});
+      const content=await page.getTextContent();
 
-      // Group items into lines by rounded Y position
+      // Group items into lines by rounded Y
       const lineMap={};
       content.items.forEach(item=>{
-        if(!item.str.trim())return;
+        if(!item.str||!item.str.trim())return;
         const y=Math.round(item.transform[5]);
         if(!lineMap[y])lineMap[y]=[];
         lineMap[y].push({
           text:item.str,
-          fontSize:Math.abs(item.transform[3]), // height = font size
-          bold:item.fontName&&(item.fontName.toLowerCase().includes('bold')||item.fontName.toLowerCase().includes('heavy')),
+          fontSize:Math.abs(Math.round(item.transform[3])),
           x:item.transform[4],
         });
       });
 
-      // Sort lines top-to-bottom (higher Y = higher on page in PDF coords)
+      if(Object.keys(lineMap).length===0)continue;
+
+      // Sort lines top-to-bottom
       const sortedYs=Object.keys(lineMap).map(Number).sort((a,b)=>b-a);
 
-      // Detect dominant font size (body text size)
-      const allSizes=Object.values(lineMap).flat().map(i=>Math.round(i.fontSize));
+      // Find dominant (body) font size
+      const allSizes=Object.values(lineMap).flat().map(it=>it.fontSize).filter(s=>s>0);
       const sizeCount={};
       allSizes.forEach(s=>{sizeCount[s]=(sizeCount[s]||0)+1;});
-      const bodySize=parseInt(Object.entries(sizeCount).sort((a,b)=>b[1]-a[1])[0]?.[0]||12);
+      const bodySize=allSizes.length>0?parseInt(Object.entries(sizeCount).sort((a,b)=>b[1]-a[1])[0][0]):12;
 
       let prevY=null;
       sortedYs.forEach(y=>{
         const items=lineMap[y].sort((a,b)=>a.x-b.x);
-        const lineText=items.map(it=>it.str).join(' ').trim();
+        const lineText=items.map(it=>it.text).join(' ').trim();
         if(!lineText)return;
 
-        const avgSize=items.reduce((s,it)=>s+it.fontSize,0)/items.length;
-        const isBold=items.some(it=>it.bold);
-        const isLarge=avgSize>bodySize*1.3;
-        const isMedium=avgSize>bodySize*1.1&&avgSize<=bodySize*1.3;
+        const avgSize=items.reduce((s,it)=>s+it.fontSize,0)/items.length||bodySize;
+        const isLarge=avgSize>=bodySize*1.4;
+        const isMedium=avgSize>=bodySize*1.15&&avgSize<bodySize*1.4;
 
-        // Detect paragraph gap (large Y jump = new paragraph)
+        // Gap detection
         const yGap=prevY!==null?prevY-y:0;
-        const isNewParagraph=yGap>avgSize*1.8;
+        if(yGap>avgSize*2&&allChildren.length>0){
+          allChildren.push(new docx.Paragraph({children:[new docx.TextRun({text:''})],spacing:{after:80}}));
+        }
         prevY=y;
 
-        // Add spacing paragraph for gaps
-        if(isNewParagraph&&allChildren.length>0){
-          allChildren.push(new docx.Paragraph({children:[new docx.TextRun('')],spacing:{after:60}}));
-        }
+        // DOCX font size in half-points
+        const docxSize=Math.max(16,Math.round(isLarge?avgSize*2.2:isMedium?avgSize*1.8:bodySize*2));
 
-        // Build runs with styling
-        const runs=items.map(it=>new docx.TextRun({
-          text:it.str+' ',
-          bold:it.bold||isLarge,
-          size:isLarge?Math.round(Math.min(it.fontSize*1.5,32)*2):isMedium?Math.round(it.fontSize*1.3*2):Math.round(bodySize*2),
+        const run=new docx.TextRun({
+          text:lineText,
+          bold:isLarge,
+          size:Math.min(docxSize,72),
           font:{name:'Calibri'},
-        }));
-
-        // Choose heading style based on size
-        let headingLevel=undefined;
-        if(isLarge&&avgSize>bodySize*2)headingLevel='Heading1';
-        else if(isLarge&&avgSize>bodySize*1.5)headingLevel='Heading2';
-        else if(isLarge)headingLevel='Heading3';
+        });
 
         allChildren.push(new docx.Paragraph({
-          heading:headingLevel,
-          children:runs,
+          children:[run],
           spacing:{after:isLarge?160:80,line:276,lineRule:docx.LineRuleType.AUTO},
         }));
       });
 
-      // Page break between pages
       if(i<n){
-        allChildren.push(new docx.Paragraph({
-          children:[new docx.TextRun({text:'',break:1})],
-          pageBreakBefore:true,
-        }));
+        allChildren.push(new docx.Paragraph({pageBreakBefore:true,children:[new docx.TextRun({text:' '})]}));
       }
     }
 
+    if(allChildren.length===0)return showStatus('pdf2word','error','No text found. This PDF may be scanned or image-based.');
+
     showStatus('pdf2word','info','Building DOCX…');
     const doc=new docx.Document({
-      styles:{
-        default:{
-          document:{run:{font:{name:'Calibri'},size:24}},
-        },
-      },
       sections:[{
-        properties:{
-          page:{
-            margin:{top:1134,right:1134,bottom:1134,left:1134}, // ~2cm margins
-          },
-        },
+        properties:{page:{margin:{top:1134,right:1134,bottom:1134,left:1134}}},
         children:allChildren,
       }],
     });
