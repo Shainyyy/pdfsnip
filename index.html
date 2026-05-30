@@ -749,12 +749,10 @@ async function doPdf2Word(){
     }
     showStatus('pdf2word','info','Building DOCX…');
     const doc=new docx.Document({sections:[{properties:{},children:paragraphs}]});
-    const bytes=await docx.Packer.toBuffer(doc);
+    const blob=await docx.Packer.toBlob(doc);
     const outName=pdf2wordFile.name.replace(/\.pdf$/i,'')+'.docx';
-    pendingDownload={bytes:bytes,filename:outName,mime:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'};
-    pendingBlobs=null;
-    startAdCountdown();
-    showStatus('pdf2word','success','Done! Download starting…');
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=outName;a.click();URL.revokeObjectURL(url);
+    showStatus('pdf2word','success','Done! Your DOCX is downloading.');
   }catch(e){showStatus('pdf2word','error','Error: '+e.message);}
 }
 
