@@ -185,7 +185,7 @@
     <div class="tool-card" onclick="openPanel('pdf2word')">
       <div class="tool-icon">📝</div>
       <h3>PDF to Word</h3>
-      <p>Convert text-based PDFs to editable DOCX files. Free, instant, no upload.</p>
+      <p>Convert text-based PDFs to editable DOCX. Detects headings, bold text and font sizes. Best for simple, text-heavy documents.</p>
     </div>
   </div>
 </section>
@@ -416,7 +416,7 @@
   <div class="panel">
     <button class="panel-close" onclick="closePanel('pdf2word')">✕</button>
     <h2>📝 PDF to Word</h2>
-    <p class="panel-sub">Convert text-based PDFs to editable DOCX files. Works best with PDFs that have selectable text — scanned documents may not convert perfectly.</p>
+    <p class="panel-sub">Converts text-based PDFs to editable DOCX — with font size detection, bold text and heading recognition.<br/><span style="color:var(--muted);font-size:0.82rem;">⚠️ Complex layouts, tables, images and multi-column designs will not be preserved. Works best with simple, text-heavy PDFs. Scanned documents are not supported.</span></p>
     <div class="dropzone" id="drop-pdf2word">
       <div class="dropzone-icon">📄</div>
       <p><strong>Click to select</strong> or drag & drop your PDF here</p>
@@ -716,43 +716,115 @@ function processPdf2WordFile(file){
 }
 async function doPdf2Word(){
   if(!pdf2wordFile)return showStatus('pdf2word','error','Please select a PDF first.');
-  showStatus('pdf2word','info','Extracting text from PDF…');
+  showStatus('pdf2word','info','Extracting text and styles…');
   try{
     const buf=await pdf2wordFile.arrayBuffer();
     const pdf=await pdfjsLib.getDocument({data:buf}).promise;
     const n=pdf.numPages;
-    const paragraphs=[];
+    const allChildren=[];
+
     for(let i=1;i<=n;i++){
       showStatus('pdf2word','info',`Processing page ${i} of ${n}…`);
       const page=await pdf.getPage(i);
-      const content=await page.getTextContent();
-      const lines={};
+      const content=await page.getTextContent({includeMarkedContent:false});
+      const viewport=page.getViewport({scale:1});
+
+      // Group items into lines by rounded Y position
+      const lineMap={};
       content.items.forEach(item=>{
         if(!item.str.trim())return;
         const y=Math.round(item.transform[5]);
-        if(!lines[y])lines[y]=[];
-        lines[y].push(item.str);
+        if(!lineMap[y])lineMap[y]=[];
+        lineMap[y].push({
+          text:item.str,
+          fontSize:Math.abs(item.transform[3]), // height = font size
+          bold:item.fontName&&(item.fontName.toLowerCase().includes('bold')||item.fontName.toLowerCase().includes('heavy')),
+          x:item.transform[4],
+        });
       });
-      const sorted=Object.keys(lines).sort((a,b)=>b-a);
-      sorted.forEach(y=>{
-        const text=lines[y].join(' ').trim();
-        if(text){
-          paragraphs.push(new docx.Paragraph({
-            children:[new docx.TextRun({text,size:24,font:'Calibri'})],
-            spacing:{after:120},
-          }));
+
+      // Sort lines top-to-bottom (higher Y = higher on page in PDF coords)
+      const sortedYs=Object.keys(lineMap).map(Number).sort((a,b)=>b-a);
+
+      // Detect dominant font size (body text size)
+      const allSizes=Object.values(lineMap).flat().map(i=>Math.round(i.fontSize));
+      const sizeCount={};
+      allSizes.forEach(s=>{sizeCount[s]=(sizeCount[s]||0)+1;});
+      const bodySize=parseInt(Object.entries(sizeCount).sort((a,b)=>b[1]-a[1])[0]?.[0]||12);
+
+      let prevY=null;
+      sortedYs.forEach(y=>{
+        const items=lineMap[y].sort((a,b)=>a.x-b.x);
+        const lineText=items.map(it=>it.str).join(' ').trim();
+        if(!lineText)return;
+
+        const avgSize=items.reduce((s,it)=>s+it.fontSize,0)/items.length;
+        const isBold=items.some(it=>it.bold);
+        const isLarge=avgSize>bodySize*1.3;
+        const isMedium=avgSize>bodySize*1.1&&avgSize<=bodySize*1.3;
+
+        // Detect paragraph gap (large Y jump = new paragraph)
+        const yGap=prevY!==null?prevY-y:0;
+        const isNewParagraph=yGap>avgSize*1.8;
+        prevY=y;
+
+        // Add spacing paragraph for gaps
+        if(isNewParagraph&&allChildren.length>0){
+          allChildren.push(new docx.Paragraph({children:[new docx.TextRun('')],spacing:{after:60}}));
         }
+
+        // Build runs with styling
+        const runs=items.map(it=>new docx.TextRun({
+          text:it.str+' ',
+          bold:it.bold||isLarge,
+          size:isLarge?Math.round(Math.min(it.fontSize*1.5,32)*2):isMedium?Math.round(it.fontSize*1.3*2):Math.round(bodySize*2),
+          font:{name:'Calibri'},
+        }));
+
+        // Choose heading style based on size
+        let headingLevel=undefined;
+        if(isLarge&&avgSize>bodySize*2)headingLevel='Heading1';
+        else if(isLarge&&avgSize>bodySize*1.5)headingLevel='Heading2';
+        else if(isLarge)headingLevel='Heading3';
+
+        allChildren.push(new docx.Paragraph({
+          heading:headingLevel,
+          children:runs,
+          spacing:{after:isLarge?160:80,line:276,lineRule:docx.LineRuleType.AUTO},
+        }));
       });
+
+      // Page break between pages
       if(i<n){
-        paragraphs.push(new docx.Paragraph({pageBreakBefore:true,children:[new docx.TextRun('')]}));
+        allChildren.push(new docx.Paragraph({
+          children:[new docx.TextRun({text:'',break:1})],
+          pageBreakBefore:true,
+        }));
       }
     }
+
     showStatus('pdf2word','info','Building DOCX…');
-    const doc=new docx.Document({sections:[{properties:{},children:paragraphs}]});
+    const doc=new docx.Document({
+      styles:{
+        default:{
+          document:{run:{font:{name:'Calibri'},size:24}},
+        },
+      },
+      sections:[{
+        properties:{
+          page:{
+            margin:{top:1134,right:1134,bottom:1134,left:1134}, // ~2cm margins
+          },
+        },
+        children:allChildren,
+      }],
+    });
     const blob=await docx.Packer.toBlob(doc);
     const outName=pdf2wordFile.name.replace(/\.pdf$/i,'')+'.docx';
-    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=outName;a.click();URL.revokeObjectURL(url);
-    showStatus('pdf2word','success','Done! Your DOCX is downloading.');
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=outName;a.click();
+    URL.revokeObjectURL(url);
+    showStatus('pdf2word','success','Done! Downloading your DOCX.');
   }catch(e){showStatus('pdf2word','error','Error: '+e.message);}
 }
 
