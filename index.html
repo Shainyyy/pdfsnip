@@ -46,13 +46,13 @@
     nav ul{list-style:none;display:flex;gap:2rem}
     nav a{color:var(--muted);text-decoration:none;font-size:0.9rem;font-weight:500;transition:color 0.2s}
     nav a:hover{color:var(--text)}
-    .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 4rem;overflow:hidden}
-    .hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(37,99,235,0.15) 0%,transparent 70%);pointer-events:none}
-    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;letter-spacing:-0.03em;line-height:1.1;margin-bottom:1.5rem}
+    .hero{position:relative;padding:7rem 2rem 2.5rem;text-align:center;overflow:hidden}
+    .hero-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(37,99,235,0.12) 0%,transparent 70%);pointer-events:none}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:800;letter-spacing:-0.03em;line-height:1.15;margin-bottom:0.75rem}
     .hero h1 em{font-style:normal;color:var(--accent2)}
-    .hero p{font-size:1.15rem;color:var(--muted);max-width:520px;margin-bottom:3rem;font-weight:300}
-    .badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);color:var(--accent2);font-size:0.8rem;font-weight:600;padding:0.35rem 0.9rem;border-radius:999px;margin-bottom:1.5rem;letter-spacing:0.05em;text-transform:uppercase}
-    .tools{padding:4rem 2rem 6rem;max-width:1200px;margin:0 auto}
+    .hero p{font-size:1rem;color:var(--muted);max-width:560px;margin:0 auto;font-weight:300}
+    .badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);color:var(--accent2);font-size:0.75rem;font-weight:600;padding:0.3rem 0.85rem;border-radius:999px;margin-bottom:1rem;letter-spacing:0.05em;text-transform:uppercase}
+    .tools{padding:2rem 2rem 5rem;max-width:1200px;margin:0 auto}
     .tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
     .tool-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.75rem;cursor:pointer;transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;position:relative;overflow:hidden}
     .tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity 0.2s}
@@ -138,10 +138,9 @@
 
 <section class="hero">
   <div class="hero-glow"></div>
-  <div class="badge">⚡ 100% Free · No Upload · Browser-Based</div>
-  <h1>The PDF toolkit that<br/><em>does it all — free</em></h1>
-  <p>Split, merge, compress, rotate, reorder & convert PDFs to Word or images — instantly. No uploads, no subscriptions, no nonsense — just fast, private tools that run entirely in your browser.</p>
-  <a href="#tools" class="btn" style="width:auto;padding:0.85rem 2.5rem;">Start for free →</a>
+  <div class="badge">⚡ Free · No Upload · No Account · Browser-Based</div>
+  <h1>The PDF toolkit that<br/><em>does it all</em></h1>
+  <p>Split, merge, compress, rotate, reorder & convert — instantly in your browser. Pick a tool below.</p>
 </section>
 
 <section class="tools" id="tools">
