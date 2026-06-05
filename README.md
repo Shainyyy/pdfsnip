@@ -44,4 +44,12 @@ All processing happens **locally in your browser** using JavaScript. Your files 
 
 ## 📄 License
 
-MIT — free to use, fork, and build on.
+**Creative Commons Attribution-NonCommercial 4.0 (CC BY-NC 4.0)**
+
+You are free to view, learn from, and modify the code for **personal and non-commercial use**.  
+You may **not** copy, deploy, or redistribute this project (or substantial parts of it) as a commercial product or service without explicit written permission from the author.
+
+© 2026 PDFSnip / Tim Zanetti. All rights reserved for commercial use.  
+Brand name "PDFSnip" and logo are not covered by this license.
+
+→ [Full license text](https://creativecommons.org/licenses/by-nc/4.0/)
