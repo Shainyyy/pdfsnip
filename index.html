@@ -104,12 +104,9 @@
     .status.info{background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);color:var(--accent2);display:block}
     .status.success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:var(--success);display:block}
     .status.error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;display:block}
-    .ad-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:500;align-items:center;justify-content:center;flex-direction:column}
-    .ad-overlay.active{display:flex}
     .ad-box{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem;text-align:center;max-width:420px;width:90%;animation:panelIn 0.25s ease}
     .ad-box h3{font-family:'Syne',sans-serif;font-size:1.2rem;margin-bottom:0.5rem}
     .ad-box p{color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem}
-    .countdown{font-size:2.5rem;font-family:'Syne',sans-serif;font-weight:800;color:var(--accent2);margin-bottom:1.5rem}
     #skip-btn{display:none}
     .features{padding:4rem 2rem;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;border-top:1px solid var(--border)}
     .feature{text-align:center}
@@ -235,6 +232,101 @@
   </div>
 
 </section>
+
+<!-- HOW IT WORKS -->
+<section style="max-width:900px;margin:0 auto;padding:3rem 2rem;">
+  <h2 style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;text-align:center;margin-bottom:2.5rem;letter-spacing:-0.02em;">How to use PDFSnip</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;text-align:center;">
+    <div>
+      <div style="width:56px;height:56px;background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 1rem;">1</div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Choose a tool</h3>
+      <p style="color:#6b7fa3;font-size:0.85rem;line-height:1.6;">Click any tool card — Split, Merge, Compress, Rotate, and more. The tool opens directly in the browser.</p>
+    </div>
+    <div>
+      <div style="width:56px;height:56px;background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 1rem;">2</div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Select your file</h3>
+      <p style="color:#6b7fa3;font-size:0.85rem;line-height:1.6;">Drag and drop your PDF (or image) into the tool, or click to browse your files. Everything stays on your device.</p>
+    </div>
+    <div>
+      <div style="width:56px;height:56px;background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 1rem;">3</div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Download instantly</h3>
+      <p style="color:#6b7fa3;font-size:0.85rem;line-height:1.6;">Click the action button and your processed file downloads immediately. No waiting, no email, no account.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT SECTION -->
+<section style="max-width:900px;margin:0 auto;padding:0 2rem 3rem;">
+  <div style="background:#0d1117;border:1px solid #1e2d45;border-radius:20px;padding:2.5rem;">
+    <h2 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">Why PDFSnip is different from other PDF tools</h2>
+    <p style="color:#6b7fa3;font-size:0.9rem;line-height:1.75;margin-bottom:1rem;">Most online PDF tools upload your files to a server, process them remotely, and return the result. This means your confidential documents — contracts, medical records, financial reports — are temporarily stored on someone else's computer. PDFSnip is architecturally different: everything runs inside your browser using JavaScript and WebAssembly. The PDF bytes are processed entirely in your local RAM, then downloaded directly from memory. Zero network transmission of your file data.</p>
+    <p style="color:#6b7fa3;font-size:0.9rem;line-height:1.75;margin-bottom:1rem;">This approach also makes PDFSnip faster than server-based tools for most operations. Splitting or compressing a PDF is nearly instant because there's no round-trip to a server. And since there's no server infrastructure to maintain, we can offer all tools completely free with no subscription, no account, and no file size limits beyond your available browser memory.</p>
+    <p style="color:#6b7fa3;font-size:0.9rem;line-height:1.75;">PDFSnip currently supports 9 tools: split, merge, compress, rotate, reorder pages, delete pages, images to PDF (including HEIC), PDF to images, and PDF to Word. All tools are built with open web standards — pdf-lib, pdf.js and the Canvas API — and run on every modern browser without any plugins or installs.</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section style="max-width:900px;margin:0 auto;padding:0 2rem 3rem;" id="faq">
+  <h2 style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:1.5rem;letter-spacing:-0.02em;">Frequently Asked Questions</h2>
+
+  <details style="border-bottom:1px solid #1e2d45;padding:1rem 0;">
+    <summary style="font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem;color:#e8edf5;list-style:none;display:flex;justify-content:space-between;align-items:center;">Is PDFSnip completely free? <span style="color:#3b82f6;">▼</span></summary>
+    <p style="color:#6b7fa3;font-size:0.88rem;line-height:1.7;margin-top:0.75rem;">Yes — every tool on PDFSnip is free to use with no subscription, no payment, and no account required. There are no daily limits, no file size restrictions, and no "premium" tier. PDFSnip is supported by non-intrusive display advertising on the page.</p>
+  </details>
+
+  <details style="border-bottom:1px solid #1e2d45;padding:1rem 0;">
+    <summary style="font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem;color:#e8edf5;list-style:none;display:flex;justify-content:space-between;align-items:center;">Are my PDF files uploaded to a server? <span style="color:#3b82f6;">▼</span></summary>
+    <p style="color:#6b7fa3;font-size:0.88rem;line-height:1.7;margin-top:0.75rem;">No — your files never leave your device. PDFSnip processes everything locally in your browser using JavaScript. When you select a file, it's read into your browser's memory. The processed result is downloaded directly from memory. No file data is ever sent to any server.</p>
+  </details>
+
+  <details style="border-bottom:1px solid #1e2d45;padding:1rem 0;">
+    <summary style="font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem;color:#e8edf5;list-style:none;display:flex;justify-content:space-between;align-items:center;">What browsers does PDFSnip support? <span style="color:#3b82f6;">▼</span></summary>
+    <p style="color:#6b7fa3;font-size:0.88rem;line-height:1.7;margin-top:0.75rem;">PDFSnip works on all modern browsers — Chrome, Firefox, Safari, Edge, and mobile browsers. The tools use standard browser APIs (File API, Canvas, Web Workers) that are universally supported. No plugins, extensions, or installs are required.</p>
+  </details>
+
+  <details style="border-bottom:1px solid #1e2d45;padding:1rem 0;">
+    <summary style="font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem;color:#e8edf5;list-style:none;display:flex;justify-content:space-between;align-items:center;">Is there a file size limit? <span style="color:#3b82f6;">▼</span></summary>
+    <p style="color:#6b7fa3;font-size:0.88rem;line-height:1.7;margin-top:0.75rem;">There is no hard limit imposed by PDFSnip. The practical limit is your browser's available memory — typically several gigabytes. Most PDFs, even large ones with hundreds of pages, process without any issues.</p>
+  </details>
+
+  <details style="border-bottom:1px solid #1e2d45;padding:1rem 0;">
+    <summary style="font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem;color:#e8edf5;list-style:none;display:flex;justify-content:space-between;align-items:center;">How do I split a PDF into individual pages? <span style="color:#3b82f6;">▼</span></summary>
+    <p style="color:#6b7fa3;font-size:0.88rem;line-height:1.7;margin-top:0.75rem;">Click "Split PDF", select your file, enter the page range you want to extract (e.g. "From 1 To 3" to get the first 3 pages), and click Split. The extracted pages download as a new PDF. To split every page into individual files, repeat for each page range you need.</p>
+  </details>
+
+  <details style="border-bottom:1px solid #1e2d45;padding:1rem 0;">
+    <summary style="font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem;color:#e8edf5;list-style:none;display:flex;justify-content:space-between;align-items:center;">Can I merge more than two PDF files? <span style="color:#3b82f6;">▼</span></summary>
+    <p style="color:#6b7fa3;font-size:0.88rem;line-height:1.7;margin-top:0.75rem;">Yes — you can add as many PDFs as you need. Use the "Merge PDF" tool, drag and drop multiple files, reorder them by dragging, and click Merge. The files are combined in the order shown.</p>
+  </details>
+
+  <details style="border-bottom:1px solid #1e2d45;padding:1rem 0;">
+    <summary style="font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem;color:#e8edf5;list-style:none;display:flex;justify-content:space-between;align-items:center;">How does PDF to Word conversion work? <span style="color:#3b82f6;">▼</span></summary>
+    <p style="color:#6b7fa3;font-size:0.88rem;line-height:1.7;margin-top:0.75rem;">The PDF to Word tool extracts text content from your PDF using pdf.js, preserves heading structure based on font size, and creates a formatted DOCX file using docx.js — all in your browser. It works best with text-based PDFs (those where you can select and copy text). Scanned PDFs contain only images of text and cannot be converted without OCR, which is not available in browser-based tools.</p>
+  </details>
+
+  <details style="padding:1rem 0;">
+    <summary style="font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem;color:#e8edf5;list-style:none;display:flex;justify-content:space-between;align-items:center;">Does PDFSnip work on iPhone and Android? <span style="color:#3b82f6;">▼</span></summary>
+    <p style="color:#6b7fa3;font-size:0.88rem;line-height:1.7;margin-top:0.75rem;">Yes — PDFSnip is fully responsive and works on iOS Safari and Android Chrome. The file picker and download functions work on mobile browsers. HEIC image conversion (the iPhone photo format) is also supported on mobile.</p>
+  </details>
+</section>
+
+<!-- FAQ SCHEMA -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Is PDFSnip completely free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — every tool is free with no subscription, no account, and no file size limits."}},
+    {"@type": "Question", "name": "Are my PDF files uploaded to a server?", "acceptedAnswer": {"@type": "Answer", "text": "No. All processing happens locally in your browser. Your files never leave your device."}},
+    {"@type": "Question", "name": "What browsers does PDFSnip support?", "acceptedAnswer": {"@type": "Answer", "text": "All modern browsers — Chrome, Firefox, Safari, Edge and mobile browsers. No plugins required."}},
+    {"@type": "Question", "name": "Is there a file size limit?", "acceptedAnswer": {"@type": "Answer", "text": "There is no imposed limit. The practical limit is your browser's available memory."}},
+    {"@type": "Question", "name": "How do I split a PDF?", "acceptedAnswer": {"@type": "Answer", "text": "Click Split PDF, select your file, enter the page range and click Split. Pages download as a new PDF."}},
+    {"@type": "Question", "name": "Can I merge more than two PDFs?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — add as many PDFs as needed, reorder by dragging, then click Merge."}},
+    {"@type": "Question", "name": "How does PDF to Word work?", "acceptedAnswer": {"@type": "Answer", "text": "Text is extracted from text-based PDFs and converted to DOCX in your browser. Scanned PDFs are not supported."}},
+    {"@type": "Question", "name": "Does PDFSnip work on mobile?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — fully responsive, works on iOS Safari and Android Chrome."}}
+  ]
+}
+</script>
 
 <div class="features">
   <div class="feature"><div class="feature-icon">🔒</div><h4>100% Private</h4><p>Your files never leave your device.</p></div>
@@ -429,12 +521,6 @@
   </div>
 </div>
 
-<!-- AD OVERLAY -->
-<div class="ad-overlay" id="ad-overlay">
-  <div class="ad-box">
-    <h3>⚡ Your file is ready!</h3>
-    <p>Please wait while we prepare your download.</p>
-    <div class="countdown" id="countdown">5</div>
     <button class="btn" id="skip-btn" onclick="triggerDownload()">⬇️ Download now</button>
     <p style="font-size:0.75rem;color:var(--muted);margin-top:1rem;">Ads keep PDFSnip free for everyone 🙏</p>
   </div>
@@ -448,7 +534,6 @@ let splitFile=null, compressFile=null, rotateFile=null, deleteFile=null, reorder
 let mergeFiles=[], imgFiles=[];
 let reorderPageOrder=[];
 let pendingDownload=null, pendingBlobs=null;
-let countdownTimer=null;
 let dragMergeSrc=null, dragImgSrc=null, dragPageSrc=null;
 
 // ── Panels ──
@@ -810,33 +895,14 @@ async function doPdf2Word(){
 }
 
 // ── AD + DOWNLOAD ──
-function showAdAndDownload(bytes,filename){
-  pendingDownload={bytes,filename};pendingBlobs=null;
-  startAdCountdown();
+function showAdAndDownload(bytes,filename,mime){
+  const type=mime||'application/pdf';
+  const blob=new Blob([bytes],{type});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url);
 }
 function showAdAndDownloadBlobs(){
-  pendingDownload=null;
-  startAdCountdown();
-}
-function startAdCountdown(){
-  const overlay=document.getElementById('ad-overlay');overlay.classList.add('active');
-  const cdEl=document.getElementById('countdown'),skipBtn=document.getElementById('skip-btn');
-  let secs=5;cdEl.textContent=secs;cdEl.style.display='block';skipBtn.style.display='none';
-  clearInterval(countdownTimer);
-  countdownTimer=setInterval(()=>{secs--;cdEl.textContent=secs;if(secs<=0){clearInterval(countdownTimer);cdEl.style.display='none';skipBtn.style.display='inline-flex';}},1000);
-}
-function triggerDownload(){
-  if(pendingDownload){
-    const{bytes,filename,mime}=pendingDownload;
-    const type=mime||'application/pdf';
-    const blob=new Blob([bytes],{type});
-    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url);
-  } else if(pendingBlobs){
-    pendingBlobs.forEach(({blob,name},i)=>{setTimeout(()=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);},i*300);});
-  }
-  document.getElementById('ad-overlay').classList.remove('active');
-  document.getElementById('countdown').style.display='block';
-  pendingDownload=null;pendingBlobs=null;
+  if(pendingBlobs){pendingBlobs.forEach(({blob,name},i)=>{setTimeout(()=>{const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);},i*300);});}
+  pendingBlobs=null;
 }
 
 // ── STATUS ──
