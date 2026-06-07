@@ -54,7 +54,6 @@ Contact: hello@pdfsnip.net
 | DOCX generation | [docx.js](https://docx.js.org/) |
 | Hosting | GitHub Pages |
 | CDN + DNS | Cloudflare |
-| Domain cost | ~$10/year |
 
 ---
 
