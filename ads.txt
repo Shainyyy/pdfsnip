@@ -3,6 +3,4 @@
 
 # Google AdSense
 google.com, pub-2108686124406108, DIRECT, f08c47fec0942fa0
-
-# Monetag
-monetag.com, 244106, DIRECT
+google.com, ca-pub-2108686124406108, DIRECT, f08c47fec0942fa0
